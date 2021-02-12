@@ -59,31 +59,32 @@ public class MultiThreadMergeSort extends Thread {
      * merged with the previous thread array after forking the threads
      */
     private void sort() {
-        if (arraySize == 1) return;
+        if (arraySize == 1) return; //base case (reached a leaf)
         int middleIndex = arraySize / 2;
         int[] leftArray = new int[middleIndex];
         int[] rightArray = new int[arraySize - middleIndex];
 
-        System.arraycopy(array, 0, leftArray, 0, middleIndex);
-        System.arraycopy(array, middleIndex, rightArray, 0, arraySize - middleIndex);
+        System.arraycopy(array, 0, leftArray, 0, middleIndex); //copy left side of array
+        System.arraycopy(array, middleIndex, rightArray, 0, arraySize - middleIndex); //copy right side of array
 
-        MultiThreadMergeSort sortLeft = new MultiThreadMergeSort(leftArray, leftArray.length, leaf, false);
+        MultiThreadMergeSort sortLeft = new MultiThreadMergeSort(leftArray, leftArray.length, leaf, false); //left side sort thread
         sortLeft.start();
-        MultiThreadMergeSort sortRight = new MultiThreadMergeSort(rightArray, rightArray.length, leaf, true);
+        MultiThreadMergeSort sortRight = new MultiThreadMergeSort(rightArray, rightArray.length, leaf, true); //right side sort thread
         sortRight.start();
 
+        //try joining threads before merging the two resulting arrays
         try {
             sortLeft.join();
             sortRight.join();
         } catch (Exception e) {
-            DEBUGGER.log(Level.SEVERE, String.format("message: %s", e.getMessage()));
+            DEBUGGER.log(Level.SEVERE, String.format("message: %s", e.getMessage())); //log for debugging purposes incase thread fails
         }
 
         merge(result, sortLeft.result, sortRight.result, middleIndex, arraySize - middleIndex);
     }
 
     /**
-     * Merge two split arrays into the larger array
+     * Merge two sorted arrays into a sorted larger array
      *
      * @param array      array to be sorted, ex: [1,2,4,3]
      * @param leftArray  left side sorted array, ex: [1,2]
