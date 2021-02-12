@@ -5,23 +5,23 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class MultiThreadMergeSort extends Thread {
-    private static final Logger DEBUGGER = Logger.getLogger("DEBUG");
-    private int[] array;
-    private int[] result;
-    private int arraySize;
-    private StringBuilder leaf;
+    private static final Logger DEBUGGER = Logger.getLogger("DEBUG"); //debugger
+    private int[] array; //array to sort
+    private int[] result; //sorted array, used in merging after joining threads
+    private int arraySize; //size of array to sort (not necessary but makes it easier)
+    private String leaf; //holds the current position of the thread in the tree
 
     MultiThreadMergeSort(int[] array, int arraySize, String leaf, boolean isRight) {
         this.array = array;
         this.result = array;
         this.arraySize = arraySize;
-        this.leaf = new StringBuilder(String.format("%s%s", leaf, isRight ? "1" : "0"));
+        this.leaf = String.format("%s%s", leaf, isRight ? "1" : "0");
     }
 
     /**
      * Write to output.txt file
      *
-     * @param outputLine text to write
+     * @param outputLine text to write to output.txt
      */
     private void writeToOutputFile(String outputLine) {
         try {
@@ -33,16 +33,30 @@ public class MultiThreadMergeSort extends Thread {
         }
     }
 
+    /**
+     * run method for multithreaded merge sort, writes thread number
+     * to output file and prints result of sorted array after thread is completed
+     */
     @Override
     public void run() {
-        writeToOutputFile(String.format("Thread %s started \n", leaf.toString()));
+        writeToOutputFile(String.format("Thread %s started \n", leaf));
         sort();
-        writeToOutputFile(String.format("Thread %s finished: %s \n", leaf.toString(), Arrays.toString(result)));
+        writeToOutputFile(String.format("Thread %s finished: %s \n", leaf, Arrays.toString(result)));
     }
 
     /**
      * Sorts integer array recursively using merge sort. Each split will initialize a new thread
      * -> not efficient, but fun :)
+     * <p>
+     * EX: t1 -> 3304, 8221, 26849, 14038, 1509, 6367, 7856, 21362
+     * /t10                               \t11
+     * 3304, 8221, 26849, 14038             1509, 6367, 7856, 21362
+     * /t100          \t101               /t110          \t111
+     * 3304, 8221       26849, 14038      1509, 6367       7856, 21362
+     * /t1000   \t1001   /t1010   \t1011   /t1100   \t1101    /t1110   \t1111
+     * 3304     8221     26849     14038  1509      6367     7856      21362
+     * at the edge of the leaf the arraysize = 1 and we can finally return with the result array which is subsequentially
+     * merged with the previous thread array after forking the threads
      */
     private void sort() {
         if (arraySize == 1) return;
@@ -53,9 +67,9 @@ public class MultiThreadMergeSort extends Thread {
         System.arraycopy(array, 0, leftArray, 0, middleIndex);
         System.arraycopy(array, middleIndex, rightArray, 0, arraySize - middleIndex);
 
-        MultiThreadMergeSort sortLeft = new MultiThreadMergeSort(leftArray, leftArray.length, leaf.toString(), false);
+        MultiThreadMergeSort sortLeft = new MultiThreadMergeSort(leftArray, leftArray.length, leaf, false);
         sortLeft.start();
-        MultiThreadMergeSort sortRight = new MultiThreadMergeSort(rightArray, rightArray.length, leaf.toString(), true);
+        MultiThreadMergeSort sortRight = new MultiThreadMergeSort(rightArray, rightArray.length, leaf, true);
         sortRight.start();
 
         try {

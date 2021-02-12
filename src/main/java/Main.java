@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
 
     /**
-     * Main Method for scanning and initiating mergesort
+     * Driver for reading input file, creating output.txt file and testing the multithreaded mergesort
      *
      * @param args command line args
      * @throws IOException          if input.txt is not in classpath/does not exist, or if there is a problem creating output.txt
@@ -29,6 +29,15 @@ public class Main {
         multiThreadMergeSort.start();
         multiThreadMergeSort.join();
 
+        //Testing the sort
+        assert(integers[0] == 1509);
+        assert(integers[1] == 3304);
+        assert(integers[2] == 6367);
+        assert(integers[3] == 7856);
+        assert(integers[4] == 8221);
+        assert(integers[5] == 14038);
+        assert(integers[6] == 21362);
+        assert(integers[7] == 26849);
     }
 
 }
