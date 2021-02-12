@@ -7,13 +7,11 @@ import java.util.logging.Level;
 public class MultiThreadMergeSort extends Thread {
     private static final Logger DEBUGGER = Logger.getLogger("DEBUG"); //debugger
     private int[] array; //array to sort
-    private int[] result; //sorted array, used in merging after joining threads
     private int arraySize; //size of array to sort (not necessary but makes it easier)
     private String leaf; //holds the current position of the thread in the tree
 
     MultiThreadMergeSort(int[] array, int arraySize, String leaf, boolean isRight) {
         this.array = array;
-        this.result = array;
         this.arraySize = arraySize;
         this.leaf = String.format("%s%s", leaf, isRight ? "1" : "0");
     }
@@ -41,7 +39,7 @@ public class MultiThreadMergeSort extends Thread {
     public void run() {
         writeToOutputFile(String.format("Thread %s started \n", leaf));
         sort();
-        writeToOutputFile(String.format("Thread %s finished: %s \n", leaf, Arrays.toString(result)));
+        writeToOutputFile(String.format("Thread %s finished: %s \n", leaf, Arrays.toString(array)));
     }
 
     /**
@@ -80,7 +78,7 @@ public class MultiThreadMergeSort extends Thread {
             DEBUGGER.log(Level.SEVERE, String.format("message: %s", e.getMessage())); //log for debugging purposes incase thread fails
         }
 
-        merge(result, sortLeft.result, sortRight.result, middleIndex, arraySize - middleIndex);
+        merge(array, sortLeft.array, sortRight.array, middleIndex, arraySize - middleIndex);
     }
 
     /**
