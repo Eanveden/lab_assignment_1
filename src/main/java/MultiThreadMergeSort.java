@@ -1,4 +1,6 @@
-public class MergeSort {
+import javafx.concurrent.Worker;
+
+public class multiThreadMergeSort extends Thread {
 
     /**
      * merge sort method, sort int[] array of size arraySize. For example,if input array is [2,3,1] then the sorted
